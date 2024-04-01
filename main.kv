@@ -1,7 +1,124 @@
+# #:set color_primary rgba("#8601AF")
+# #:set color_secondary rgba("#342309")
+# #:set color_bg rgba("#FB9902")
+# #:set color_contrast rgba("#EFD4F7")
+
+
+# <ButtonMenu@Button>:
+#     font_name: "assets/Graduate-Regular.ttf"
+#     color: color_contrast
+#     background_color: color_contrast
+#     font_size: "30sp"
+#     size_hint_y: 0.25
+#     height: "50dp"
+#     on_press: self.background_color = color_contrast
+#     on_release: self.background_color = color_contrast
+
+# <ButtonImage>:
+#     allow_stretch: True
+#     size_hint: None, None
+#     size: "200dp", "200dp"
+
+# <MenuScreen>:
+#     canvas.before:
+#         Color:
+#             rgba: color_bg
+#         Rectangle:
+#             pos: self.pos
+#             size: self.size
+#     BoxLayout:
+#         orientation: "vertical"
+#         padding: "20dp"
+#         spacing: "20dp"
+#         Label:
+#             id: title_game
+#             text: "Dyploma clicker"
+#             font_name: "assets/Graduate-Regular.ttf"
+#             color: color_primary
+#             font_size: "40sp"
+#             font_weigth: 800
+#             size_hint_y: .2
+#         BoxLayout:
+#             orientation: 'vertical'
+#         Image:
+#             source: 'assets/dyploma.png'
+#             size_hint_y: 0.3
+#         BoxLayout:
+#         ButtonMenu:
+#             id: play_btn
+#             text: "Play"
+#             height: "50dp"
+#             on_press: root.manager.current = "game"
+
+# <GameScreen>:
+#     canvas.before:
+#         Color:
+#             rgba: rgba("#fff")
+#         Rectangle:
+#             pos: self.pos
+#             size: self.size
+#     BoxLayout:
+#         orientation: "vertical"
+#         padding: "20dp"
+#         spacing: "20dp"
+
+#         BoxLayout:
+#             orientation: "horizontal"
+#             size_hint_y: None  
+#             height: self.minimum_height
+#             FloatLayout:
+#                 ButtonImage:
+#                     source: 'assets/dyploma.png'
+#                     size_hint_x: None
+#                     width: '120dp'
+#                     size_hint_y: None
+#                     height: '48dp'
+        
+#             ProgressBar:
+#                 id: progress
+#                 size_hint_y: 1
+#                 size_hint_x: 1
+#                 background_normal: 'assets/unnamed.jpg'
+#                 background_down: 'assets/unnamed.jpg'
+#                 max: 100
+#                 value: 50
+
+#             Image:
+#                 source: 'assets/unnamed.jpg'
+#                 size_hint_x: None
+#                 width: '120dp'
+#                 size_hint_y: None
+#                 height: '48dp'
+
+
+
+
+
+
+#:set color_primary rgba("#8601AF")
+#:set color_secondary rgba("#342309")
+#:set color_bg rgba("#FB9902")
+#:set color_contrast rgba("#EFD4F7")
+
+<ButtonMenu@Button>:
+    font_name: "assets/Graduate-Regular.ttf"
+    color: color_contrast
+    background_color: color_contrast
+    font_size: "30sp"
+    size_hint_y: 0.25
+    height: "50dp"
+    on_press: self.background_color = color_contrast
+    on_release: self.background_color = color_contrast
+
+<ButtonImage>:
+    allow_stretch: True
+    size_hint: None, None
+    size: "200dp", "200dp"
+
 <MenuScreen>:
     canvas.before:
         Color:
-            rgba: rgba("#B01825")
+            rgba: color_bg
         Rectangle:
             pos: self.pos
             size: self.size
@@ -13,6 +130,92 @@
             id: title_game
             text: "Dyploma clicker"
             font_name: "assets/Graduate-Regular.ttf"
-            color: "#331109"
+            color: color_primary
             font_size: "40sp"
             font_weigth: 800
+            size_hint_y: .2
+        BoxLayout:
+            orientation: 'vertical'
+        Image:
+            source: 'assets/dyploma.png'
+            size_hint_y: 0.3
+        BoxLayout:
+        ButtonMenu:
+            id: play_btn
+            text: "Play"
+            height: "50dp"
+            on_press: root.manager.current = "game"
+
+<GameScreen>:
+    canvas.before:
+        Color:
+            rgba: rgba("#fff")
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    BoxLayout:
+        orientation: "vertical"
+        padding: "20dp"
+        spacing: "20dp"
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: self.minimum_height
+            FloatLayout:
+                ButtonImage:
+                    source: 'assets/dyploma.png'
+                    size_hint_x: None
+                    width: '120dp'
+                    size_hint_y: None
+                    height: '48dp'
+                    on_touch_down: root.increase_progress()
+
+            ProgressBar:
+                id: progress
+                size_hint_y: 1
+                size_hint_x: 1
+                max: 100
+                value: root.progress
+                background_normal: 'assets/progress_empty.png'
+                background_down: 'assets/progress_empty.png'
+                background_width: self.width
+                background_height: self.height
+                cursor_normal: 'assets/unnamed.jpg'
+                cursor_down: 'assets/unnamed.jpg'
+                cursor_width: self.width * (self.value / self.max)
+                cursor_height: self.height
+
+            Image:
+                source: 'assets/unnamed.jpg'
+                size_hint_x: None
+                width: '120dp'
+                size_hint_y: None
+                height: '48dp'
+
+        Label:
+            text: "Time Interval: {}ms".format(root.time_interval)
+            size_hint_y: None
+            height: self.texture_size[1]
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: '48dp'
+            spacing: '10dp'
+
+            Button:
+                text: "100ms"
+                on_press: root.time_interval = 100
+
+            Button:
+                text: "80ms"
+                on_press: root.time_interval = 80
+
+            Button:
+                text: "60ms"
+                on_press: root.time_interval = 60
+
+            Button:
+                text: "40ms"
+                on_press: root.time_interval = 40
