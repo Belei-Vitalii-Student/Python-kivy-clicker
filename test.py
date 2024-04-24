@@ -1,61 +1,87 @@
+import kivy
 from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.progressbar import ProgressBar
-from kivy.clock import Clock
-from kivy.core.window import Window
+from kivy.uix.label import Label
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.clock import Clock  # Імпортуємо модуль Clock
+import json
 
-class StartScreen(Screen):
+# Завантажуємо збережені дані
+try:
+    with open('data.json', 'r') as f:
+        data = json.load(f)
+except FileNotFoundError:
+    data = {'score': 0, 'click_power': 1, 'teachers': 0}
+
+class MainScreen(Screen):
     def __init__(self, **kwargs):
-        super(StartScreen, self).__init__(**kwargs)
-        self.add_widget(Label(text='Клікер дипломної роботи', font_size=30, pos_hint={'center_x': 0.5, 'center_y': 0.7}))
-        self.add_widget(Label(text='Рекорд: ' + str(App.get_running_app().record), font_size=20, pos_hint={'center_x': 0.5, 'center_y': 0.5}))
-        self.add_widget(Button(text='Почати гру', size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'center_y': 0.3}, on_press=self.start_game))
+        super().__init__(**kwargs)
+        layout = BoxLayout(orientation='vertical')
+        self.label = Label(text=f'Очки: {data["score"]}')
+        play_button = Button(text='Грати', on_press=self.switch_to_game)
+        layout.add_widget(self.label)
+        layout.add_widget(play_button)
+        self.add_widget(layout)
 
-    def start_game(self, instance):
-        self.manager.current = 'game'
+    def switch_to_game(self, instance):
+        app.root.current = 'game'
 
 class GameScreen(Screen):
     def __init__(self, **kwargs):
-        super(GameScreen, self).__init__(**kwargs)
-        self.progress = ProgressBar(max=100, value=50, pos_hint={'center_x': 0.5, 'center_y': 0.5}, size_hint=(0.8, 0.8))
-        self.add_widget(self.progress)
-        self.add_widget(Button(background_normal='diploma.png', size_hint=(0.2, 0.2), pos_hint={'center_x': 0.5, 'center_y': 0.3}, on_press=self.increment_progress))
-        self.time_label = Label(text='Час: 0', font_size=20, pos_hint={'center_x': 0.5, 'center_y': 0.9})
-        self.add_widget(self.time_label)
-        self.time = 0
+        super().__init__(**kwargs)
+        layout = BoxLayout(orientation='vertical')
+        self.label = Label(text=f'Очки: {data["score"]}')
+        self.diploma_button = Button(text='🎓', on_press=self.click_diploma, font_size=48)
+        self.upgrade_button = Button(text=f'Прокачати клік ({data["click_power"] + 1} очок)', on_press=self.upgrade_click)
+        self.teacher_button = Button(text=f'Найняти викладача ({data["teachers"] + 1} очок/сек)', on_press=self.hire_teacher)
+        layout.add_widget(self.label)
+        layout.add_widget(self.diploma_button)
+        layout.add_widget(self.upgrade_button)
+        layout.add_widget(self.teacher_button)
+        self.add_widget(layout)
         self.event = None
 
-    def on_enter(self):
-        self.event = Clock.schedule_interval(self.decrement_progress, 0.3)
+    def click_diploma(self, instance):
+        data['score'] += data['click_power']
+        self.label.text = f'Очки: {data["score"]}'
+        self.save_data()
 
-    def increment_progress(self, instance):
-        if self.progress.value < 100:
-            self.progress.value += 1
+    def upgrade_click(self, instance):
+        cost = data['click_power'] + 1
+        if data['score'] >= cost:
+            data['score'] -= cost
+            data['click_power'] += 1
+            self.label.text = f'Очки: {data["score"]}'
+            self.upgrade_button.text = f'Прокачати клік ({data["click_power"] + 1} очок)'
+            self.save_data()
 
-    def decrement_progress(self, dt):
-        if self.progress.value > 0:
-            self.progress.value -= 1
-        else:
-            self.game_over()
-        self.time += dt
-        self.time_label.text = 'Час: {:.2f}'.format(self.time)
+    def hire_teacher(self, instance):
+        cost = data['teachers'] + 1
+        if data['score'] >= cost:
+            data['score'] -= cost
+            data['teachers'] += 1
+            self.label.text = f'Очки: {data["score"]}'
+            self.teacher_button.text = f'Найняти викладача ({data["teachers"] + 1} очок/сек)'
+            self.save_data()
+            if self.event is None:
+                self.event = Clock.schedule_interval(self.auto_click, 1)
 
-    def game_over(self):
-        self.event.cancel()
-        if self.time > App.get_running_app().record:
-            App.get_running_app().record = self.time
-        self.manager.current = 'start'
+    def auto_click(self, dt):
+        data['score'] += data['teachers']
+        self.label.text = f'Очки: {data["score"]}'
+        self.save_data()
 
-class ClickerApp(App):
+    def save_data(self):
+        with open('data.json', 'w') as f:
+            json.dump(data, f)
+
+class DyplomaClickerApp(App):
     def build(self):
-        Window.size = (400, 800)
-        self.record = 0
         sm = ScreenManager()
-        sm.add_widget(StartScreen(name='start'))
+        sm.add_widget(MainScreen(name='main'))
         sm.add_widget(GameScreen(name='game'))
         return sm
 
-if __name__ == '__main__':
-    ClickerApp().run()
+app = DyplomaClickerApp()
+app.run()
