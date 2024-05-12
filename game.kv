@@ -1,0 +1,190 @@
+<MainScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 20
+        padding: 20
+        canvas.before:
+            Rectangle:
+                pos: self.pos
+                size: self.size
+                source: 'assets/main_bg.jpg'
+        Label:
+            text: "Dyploma Clicker"
+            font_size: 40
+            bold: True
+            size_hint: 1, 0.2
+            halign: 'center'
+            valign: 'middle'
+            outline_color: 0, 0, 0, 1
+            outline_width: 2
+        
+        GridLayout:
+            cols: 2
+            spacing: 10
+            size_hint: 1, 0.6
+            
+            Label:
+                text: "Clicks:"
+                font_size: 20
+                halign: 'center'
+                valign: 'middle'
+                outline_color: 0, 0, 0, 1
+                outline_width: 2
+            Label:
+                text: str(root.data['clicks'])
+                font_size: 20
+                halign: 'center'
+                valign: 'middle'
+                color: 255/255, 172/255, 18/255
+                outline_color: 0, 0, 0, 1
+                outline_width: 2
+            Label:
+                text: "Score:"
+                font_size: 20
+                halign: 'center'
+                valign: 'middle'
+                outline_color: 0, 0, 0, 1
+                outline_width: 2
+            Label:
+                text: str(root.data['score'])
+                font_size: 20
+                halign: 'center'
+                valign: 'middle'
+                color: 255/255, 172/255, 18/255
+                outline_color: 0, 0, 0, 1
+                outline_width: 2
+            Label:
+                text: "Click Power:"
+                font_size: 20
+                halign: 'center'
+                valign: 'middle'
+                outline_color: 0, 0, 0, 1
+                outline_width: 2
+            Label:
+                text: str(root.data['click_power'])
+                font_size: 20  
+                halign: 'center'
+                valign: 'middle'
+                color: 255/255, 172/255, 18/255
+                outline_color: 0, 0, 0, 1
+                outline_width: 2
+            Label:
+                text: "Teachers:"
+                font_size: 20
+                halign: 'center'
+                valign: 'middle'
+                outline_color: 0, 0, 0, 1
+                outline_width: 2
+            Label:
+                text: str(root.data['teachers'])
+                font_size: 20 
+                halign: 'center'
+                valign: 'middle'
+                color: 255/255, 172/255, 18/255
+                outline_color: 0, 0, 0, 1
+                outline_width: 2
+            Label:
+                text: "AIs:"
+                font_size: 20
+                halign: 'center'
+                valign: 'middle'
+                outline_color: 0, 0, 0, 1
+                outline_width: 2
+            Label:
+                text: str(root.data['ais'])
+                font_size: 20
+                halign: 'center'
+                valign: 'middle'
+                color: 255/255, 172/255, 18/255
+                outline_color: 0, 0, 0, 1
+                outline_width: 2
+        Button:
+            text: 'Грати'
+            font_size: 30
+            size_hint: 1, 0.2
+            background_normal: 'assets/start_button.png'
+            background_down: 'assets/start_button_pressed.png'
+            on_press: root.switch_to_game(self)
+
+<GameScreen>:
+    FloatLayout:
+        Image:
+            source: 'assets/bg.jpg'
+            allow_stretch: True
+            size_hint: 1, 1
+            opacity: 0.5
+            keep_ratio: False
+            repeat: True
+        GridLayout:
+            rows: 4
+            FloatLayout:
+                id: floating_labels
+            AnchorLayout:
+                anchor_x: 'left'
+                anchor_y: 'top'
+                size_hint: 1, 0.4
+                Label:
+                    id: progress_text
+                    text: root.progress_text
+                    bold: True
+                    font_size: 40
+            BoxLayout:
+                id: dyploma_button_box
+                orientation: 'vertical'
+                size_hint: 1, 1
+                background_color: 0.5, 0.804, 0.686, 0.8
+                ButtonInteraction:
+                    id: dyploma_button
+                    source: 'assets/dyploma_step_1.png'
+                    size: 200, 200
+                    size_hint: None, None
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    rotation: 0
+                    on_press: root.click_diploma(self)
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: 1, 1
+                Button:
+                    id: upgrade_button
+                    text: root.market_upgrade_text
+                    on_press: 
+                        root.upgrade_click(self)
+                        root.animate_button(self)
+                    background_color: 0.125, 0.804, 0.686, 0.8
+                    background_normal: ''
+                    background_down: ''
+                    color: 1, 1, 1, 1
+                    font_size: 20
+                    size_hint: 1, 0.1
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint: 1, 0.1
+                    BoxLayout:
+                        orientation: 'vertical'
+                        Button:
+                            id: teacher_button
+                            text: root.market_teacher_text
+                            on_press: 
+                                root.hire_teacher(self)
+                                root.animate_button(self)
+                            background_color: 0.125, 0.804, 0.686, 0.8
+                            background_normal: ''
+                            background_down: ''
+                            color: 1, 1, 1, 1
+                            font_size: 15
+                            size_hint: 1, 0.3
+                    BoxLayout:
+                        orientation: 'vertical'
+                        Button:
+                            id: ai_button
+                            text: root.market_ai_text
+                            on_press: 
+                                root.hire_ai(self)
+                                root.animate_button(self)
+                            background_color: 0.125, 0.804, 0.686, 0.8
+                            background_normal: ''
+                            background_down: ''
+                            color: 1, 1, 1, 1
+                            font_size: 15
+                            size_hint: 1, 0.3
